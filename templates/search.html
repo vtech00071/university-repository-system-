@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="search-section">
+    <div class="container">
+        <div class="search-header">
+            <h1 class="page-title">Repository Verification & Search</h1>
+            <p class="page-description">Search by project title, author, keyword, department, or abstract to identify
+                existing projects and avoid duplication.</p>
+
+            <form action="/search" method="GET" class="search-bar-inline">
+                <input type="text" name="q" value="{{ query if query else '' }}" class="hero-search-input"
+                    placeholder="Type project topic, supervisor, author, or keyword..." required>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+
+        <div class="search-results-area">
+            {% if query %}
+            <div class="results-meta">
+                <p>Showing search results for: <strong>"{{ query }}"</strong> ({{ projects|length }} found)</p>
+            </div>
+            {% endif %}
+
+            {% if projects and projects|length > 0 %}
+            <div class="projects-list">
+                {% for p in projects %}
+                <article class="project-list-item">
+                    <div class="project-meta">
+                        {% if p['author_type'] == 'STUDENT' %}
+                        <span class="badge badge-student">Student Project</span>
+                        {% else %}
+                        <span class="badge badge-lecturer">Lecturer Research</span>
+                        {% endif %}
+                        <span class="project-dept">{{ p['department'] }}</span>
+                        <span class="project-session">&bull; {{ p['academic_session'] }}</span>
+                    </div>
+
+                    <h3 class="project-title">
+                        <a href="/project/{{ p['id'] }}">{{ p['title'] }}</a>
+                    </h3>
+
+                    <p class="project-author">
+                        <strong>Author:</strong> {{ p['author_name'] }}
+                        {% if p['author_type'] == 'STUDENT' and p['matric_number'] %}
+                        (Matric: {{ p['matric_number'] }})
+                        {% endif %}
+                        {% if p['supervisor'] %}
+                        &bull; <strong>Supervisor:</strong> {{ p['supervisor'] }}
+                        {% endif %}
+                    </p>
+
+                    <p class="project-abstract-snippet">
+                        {{ p['abstract'][:250] }}{% if p['abstract']|length > 250 %}...{% endif %}
+                    </p>
+
+                    <div class="project-footer">
+                        <span class="project-keywords"><strong>Keywords:</strong> {{ p['keywords'] }}</span>
+                        <a href="/project/{{ p['id'] }}" class="btn btn-outline btn-sm">View Project Details &rarr;</a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% elif query %}
+            <div class="empty-state">
+                <h3>No matching research or project found</h3>
+                <p>No repository records matched the term "{{ query }}". If this was a verification search for a student
+                    proposal, this topic may not exist in the repository yet.</p>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>Enter a query above to query the repository metadata.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

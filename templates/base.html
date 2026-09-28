@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOUESTI Research Repository</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="brand-logo">
+                <span class="brand-university">BOUESTI</span>
+                <span class="brand-system">Repository</span>
+            </a>
+            <div class="nav-links">
+                <a href="/search" class="nav-link">Search</a>
+
+                {% if session.get('user_id') %}
+                {% if session.get('role') == 'ADMIN' %}
+                <a href="/admin" class="nav-link">Dashboard</a>
+                {% endif %}
+                {% if session.get('role') == 'STUDENT' %}
+                <a href="/student/upload" class="nav-link">Student Upload</a>
+                {% endif %}
+                {% if session.get('role') == 'LECTURER' %}
+                <a href="/lecturer/upload" class="nav-link">Lecturer Upload</a>
+                {% endif %}
+                <a href="/logout" class="btn btn-outline">Logout ({{ session.get('username') }})</a>
+                {% else %}
+                <a href="/login" class="btn btn-primary">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 Bamidele Olumilua University of Education, Science and Technology, Ikere-Ekiti.</p>
+            <p class="footer-subtext">Department of Computing and Information Science &bull; Final Year Project
+                Repository</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

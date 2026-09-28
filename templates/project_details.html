@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="project-detail-section">
+    <div class="container">
+        <div class="back-link-wrapper">
+            <a href="javascript:history.back()" class="back-link">&larr; Back to Results</a>
+        </div>
+
+        <article class="detail-card">
+            <header class="detail-header">
+                <div class="detail-badges">
+                    {% if project['author_type'] == 'STUDENT' %}
+                    <span class="badge badge-student">Student Final-Year Project</span>
+                    {% else %}
+                    <span class="badge badge-lecturer">Lecturer Research Material</span>
+                    {% endif %}
+                    <span class="badge-dept">{{ project['department'] }}</span>
+                </div>
+                <h1 class="detail-title">{{ project['title'] }}</h1>
+                <p class="detail-subtitle">Submitted on {{ project['created_at'] }} &bull; Session: {{
+                    project['academic_session'] }}</p>
+            </header>
+
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Author</span>
+                    <span class="detail-value">{{ project['author_name'] }}</span>
+                </div>
+
+                {% if project['author_type'] == 'STUDENT' %}
+                <div class="detail-item">
+                    <span class="detail-label">Matriculation Number</span>
+                    <span class="detail-value">{{ project['matric_number'] }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Supervisor</span>
+                    <span class="detail-value">{{ project['supervisor'] }}</span>
+                </div>
+                {% endif %}
+
+                <div class="detail-item">
+                    <span class="detail-label">Department</span>
+                    <span class="detail-value">{{ project['department'] }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Academic Session</span>
+                    <span class="detail-value">{{ project['academic_session'] }}</span>
+                </div>
+
+                <div class="detail-item full-width">
+                    <span class="detail-label">Keywords</span>
+                    <span class="detail-value">{{ project['keywords'] }}</span>
+                </div>
+            </div>
+
+            <div class="abstract-container">
+                <h2 class="abstract-title">Abstract</h2>
+                <div class="abstract-text">
+                    {{ project['abstract'] }}
+                </div>
+            </div>
+
+            <div class="download-action-bar">
+                <div class="file-info">
+                    <span class="file-icon">📄</span>
+                    <div>
+                        <strong>Document:</strong> {{ project['original_filename'] }}
+                        <span class="file-subtext">Original verified repository submission</span>
+                    </div>
+                </div>
+                <a href="/project/{{ project['id'] }}/download" class="btn btn-primary btn-download">
+                    Download Project PDF
+                </a>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

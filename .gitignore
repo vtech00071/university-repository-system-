@@ -1,0 +1,7 @@
+__pycache__/
+.venv/
+database.db
+uploads/student_projects/*
+uploads/lecturer_projects/*
+!uploads/student_projects/.keep
+!uploads/lecturer_projects/.keep

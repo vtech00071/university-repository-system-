@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="project-detail-section">
+    <div class="container">
+        <h1 class="page-title">Administrator Dashboard</h1>
+        <p class="page-description">Oversee system users and all registered repository materials.</p>
+
+        <div style="margin-top: 40px;">
+            <h2 class="section-heading">System Users</h2>
+            <div class="detail-card">
+                <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="padding: 12px;">ID</th>
+                            <th style="padding: 12px;">Username</th>
+                            <th style="padding: 12px;">Role Access</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 12px;">{{ user['id'] }}</td>
+                            <td style="padding: 12px;">{{ user['username'] }}</td>
+                            <td style="padding: 12px;">
+                                <span
+                                    class="badge {% if user['role'] == 'STUDENT' %}badge-student{% elif user['role'] == 'LECTURER' %}badge-lecturer{% else %}badge-dept{% endif %}">
+                                    {{ user['role'] }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <h2 class="section-heading">All Registered Projects & Research</h2>
+            <div class="projects-list">
+                {% if projects %}
+                {% for p in projects %}
+                <div class="project-list-item">
+                    <div class="project-meta">
+                        <strong>{{ p['author_type'] }}</strong> &bull; {{ p['department'] }}
+                    </div>
+                    <h4 class="project-title"><a href="/project/{{ p['id'] }}">{{ p['title'] }}</a></h4>
+                    <p class="project-author">By {{ p['author_name'] }} &bull; Added: {{ p['created_at'] }}</p>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p>No projects in the repository.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
