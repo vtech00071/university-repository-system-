@@ -1,79 +1,92 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!-- Hero Section -->
 <section class="hero-section">
-    <div class="container hero-container">
+    <div class="container">
         <span class="hero-badge">Academic Research & Project Archive</span>
         <h1 class="hero-title">Discover and verify academic excellence.</h1>
         <p class="hero-subtitle">Search the BOUESTI repository to find existing research, verify project uniqueness, and
             access academic materials.</p>
 
-        <form action="/search" method="GET" class="hero-search-form">
-            <input type="text" name="q" class="hero-search-input"
-                placeholder="Search by project title, keyword, or author..." required>
-            <button type="submit" class="btn btn-primary hero-search-btn">
-                Search Repository
-            </button>
+        <!-- Unified Search Bar -->
+        <form action="/search" method="GET"
+            style="display: flex; max-width: 600px; margin: 30px auto 0; border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; background-color: #ffffff; box-shadow: var(--shadow-sm);">
+            <input type="text" name="q" placeholder="Search by project title, keyword, or author..."
+                style="flex: 1; border: none; padding: 15px; outline: none; font-size: 1rem; color: var(--text-main);"
+                required>
+            <button type="submit" class="btn btn-primary"
+                style="border-radius: 0; padding: 0 25px; white-space: nowrap; font-size: 1rem;">Search
+                Repository</button>
         </form>
     </div>
 </section>
 
+<!-- Quick Actions Section -->
 <section class="quick-actions-section">
     <div class="container">
         <div class="action-cards-grid">
 
-            <a href="/student/upload" class="action-card">
+            <!-- Student Action Card -->
+            <div class="action-card">
                 <div class="card-icon">🎓</div>
                 <h3 class="card-title">Student Project Upload</h3>
                 <p class="card-text">Submit your approved final-year project. Requires matriculation number and
                     supervisor details.</p>
-                <span class="card-link">Upload Project &rarr;</span>
-            </a>
+                <a href="/student/upload" class="card-link">Upload Project &rarr;</a>
+            </div>
 
-            <a href="/lecturer/upload" class="action-card">
+            <!-- Lecturer Action Card -->
+            <div class="action-card">
                 <div class="card-icon">📚</div>
                 <h3 class="card-title">Lecturer Research</h3>
                 <p class="card-text">Publish academic papers, journals, and departmental research materials directly to
                     the archive.</p>
-                <span class="card-link">Upload Material &rarr;</span>
-            </a>
+                <a href="/lecturer/upload" class="card-link">Upload Material &rarr;</a>
+            </div>
 
-            <a href="/search" class="action-card">
+            <!-- Advanced Search Action Card -->
+            <div class="action-card">
                 <div class="card-icon">🔍</div>
                 <h3 class="card-title">Advanced Search</h3>
                 <p class="card-text">Lecturers: verify if a proposed project topic already exists before approving a
                     student's request.</p>
-                <span class="card-link">Browse Archive &rarr;</span>
-            </a>
+                <a href="/search" class="card-link">Browse Archive &rarr;</a>
+            </div>
 
         </div>
     </div>
 </section>
 
-<section class="recent-projects-section">
+<!-- Recent Projects Section -->
+<section style="padding: 40px 0 80px; background-color: var(--bg-main);">
     <div class="container">
-        <h2 class="section-heading">Recently Added</h2>
-        <div class="projects-list">
+        <h2 class="section-heading">Recently Added to Repository</h2>
 
+        <div class="projects-list">
             {% if projects %}
             {% for p in projects %}
             <div class="project-list-item">
                 <div class="project-meta">
-                    {% if p['author_type'] == 'STUDENT' %}
-                    <span class="badge badge-student">Student Project</span>
-                    {% else %}
-                    <span class="badge badge-lecturer">Lecturer Research</span>
-                    {% endif %}
-                    <span class="project-dept">{{ p['department'] }}</span>
+                    <span
+                        class="badge {% if p['author_type'] == 'STUDENT' %}badge-student{% else %}badge-lecturer{% endif %}">{{
+                        p['author_type'] }}</span>
+                    <span class="project-dept">{{ p['department'] }} ({{ p['academic_session'] }})</span>
                 </div>
-                <h4 class="project-title"><a href="/project/{{ p['id'] }}">{{ p['title'] }}</a></h4>
-                <p class="project-author">By {{ p['author_name'] }} &bull; {{ p['academic_session'] }} Session</p>
+                <h3 class="project-title" style="margin-top: 8px;"><a href="/project/{{ p['id'] }}">{{ p['title'] }}</a>
+                </h3>
+                <p class="project-author">By {{ p['author_name'] }}</p>
             </div>
             {% endfor %}
-            {% else %}
-            <p style="color: var(--text-muted);">No projects have been added to the repository yet.</p>
-            {% endif %}
 
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="/search" class="btn btn-outline">Browse All Archives &rarr;</a>
+            </div>
+            {% else %}
+            <div class="detail-card" style="padding: 30px; text-align: center; color: var(--text-muted);">
+                No projects or research papers have been uploaded yet.
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>

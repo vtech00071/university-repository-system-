@@ -14,6 +14,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash
 from functools import wraps
 from werkzeug.security import check_password_hash, generate_password_hash
+
 app = Flask(__name__)
 app.secret_key = "bouesti_secret_key_for_flash_messages"
 
@@ -44,16 +45,20 @@ def login_required(f):
 
     return decorated_function
 
+
 def role_required(role):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            if 'role' not in session or session['role'] != role:
-                flash('You do not have permission to access this area.', 'error')
-                return redirect(url_for('index'))
+            if "role" not in session or session["role"] != role:
+                flash("You do not have permission to access this area.", "error")
+                return redirect(url_for("index"))
             return f(*args, **kwargs)
+
         return decorated_function  # <--- This line was returning 'decorator' before
+
     return decorator
+
 
 # --- ROUTES ---
 @app.route("/")
@@ -65,34 +70,38 @@ def index():
     conn.close()
     return render_template("index.html", projects=projects)
 
-@app.route('/register', methods=['GET', 'POST'])
+
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        role = request.form['role']
-        
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        role = request.form["role"]
+
         conn = get_db_connection()
-        
+
         # Check if the username or matric number already exists
-        existing_user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+        existing_user = conn.execute(
+            "SELECT * FROM users WHERE username = ?", (username,)
+        ).fetchone()
         if existing_user:
-            flash('Username or Matric Number already exists.', 'error')
+            flash("Username or Matric Number already exists.", "error")
             conn.close()
             return redirect(request.url)
-            
+
         # Hash the password and insert the new user
         hashed_password = generate_password_hash(password)
-        conn.execute('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', 
-                     (username, hashed_password, role))
+        conn.execute(
+            "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
+            (username, hashed_password, role),
+        )
         conn.commit()
         conn.close()
-        
-        flash('Account created successfully! You can now log in.', 'success')
-        return redirect(url_for('login'))
-        
-    return render_template('register.html')
 
+        flash("Account created successfully! You can now log in.", "success")
+        return redirect(url_for("login"))
+
+    return render_template("register.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -140,6 +149,52 @@ def admin_dashboard():
     users = conn.execute("SELECT id, username, role FROM users").fetchall()
     conn.close()
     return render_template("admin_dashboard.html", projects=projects, users=users)
+
+
+@app.route("/admin/delete_user/<int:user_id>", methods=["POST"])
+@login_required
+@role_required("ADMIN")
+def delete_user(user_id):
+    # Prevent the admin from accidentally deleting their own account
+    if user_id == session.get("user_id"):
+        flash("You cannot delete your own administrator account.", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    conn = get_db_connection()
+    conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+
+    flash("User account successfully removed.", "success")
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/admin/delete_project/<int:project_id>", methods=["POST"])
+@login_required
+@role_required("ADMIN")
+def delete_project(project_id):
+    conn = get_db_connection()
+    project = conn.execute(
+        "SELECT file_path FROM projects WHERE id = ?", (project_id,)
+    ).fetchone()
+
+    if project:
+        # Delete the actual PDF file from the server
+        if os.path.exists(project["file_path"]):
+            try:
+                os.remove(project["file_path"])
+            except Exception:
+                pass
+
+        # Delete the record from the database
+        conn.execute("DELETE FROM projects WHERE id = ?", (project_id,))
+        conn.commit()
+        flash("Project and associated file deleted successfully.", "success")
+    else:
+        flash("Project not found.", "error")
+
+    conn.close()
+    return redirect(url_for("admin_dashboard"))
 
 
 @app.route("/student/upload", methods=["GET", "POST"])

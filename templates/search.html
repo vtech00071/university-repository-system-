@@ -1,76 +1,53 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="search-section">
+<section class="form-section" style="padding: 40px 0;">
     <div class="container">
-        <div class="search-header">
-            <h1 class="page-title">Repository Verification & Search</h1>
-            <p class="page-description">Search by project title, author, keyword, department, or abstract to identify
-                existing projects and avoid duplication.</p>
+        <h1 class="page-title">Repository Verification & Search</h1>
+        <p class="page-description">Search by project title, author, keyword, department, or abstract to identify
+            existing projects and avoid duplication.</p>
 
-            <form action="/search" method="GET" class="search-bar-inline">
-                <input type="text" name="q" value="{{ query if query else '' }}" class="hero-search-input"
-                    placeholder="Type project topic, supervisor, author, or keyword..." required>
-                <button type="submit" class="btn btn-primary">Search</button>
-            </form>
-        </div>
+        <!-- Unified Search Bar (Matches Homepage) -->
+        <form action="/search" method="GET"
+            style="display: flex; max-width: 800px; margin: 30px 0 40px; border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; background-color: #ffffff; box-shadow: var(--shadow-sm);">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search by project title, keyword, or author..."
+                style="flex: 1; border: none; padding: 15px; outline: none; font-size: 1rem; color: var(--text-main);"
+                required>
+            <button type="submit" class="btn btn-primary"
+                style="border-radius: 0; padding: 0 30px; white-space: nowrap; font-size: 1rem;">Search</button>
+        </form>
 
-        <div class="search-results-area">
+        <div class="search-results">
             {% if query %}
-            <div class="results-meta">
-                <p>Showing search results for: <strong>"{{ query }}"</strong> ({{ projects|length }} found)</p>
-            </div>
+            <p style="margin-bottom: 20px; font-size: 0.95rem; color: var(--text-muted);">
+                Showing search results for: <strong>"{{ query }}"</strong> ({{ projects|length }} found)
+            </p>
             {% endif %}
 
-            {% if projects and projects|length > 0 %}
+            {% if projects %}
             <div class="projects-list">
                 {% for p in projects %}
-                <article class="project-list-item">
+                <div class="project-list-item">
                     <div class="project-meta">
-                        {% if p['author_type'] == 'STUDENT' %}
-                        <span class="badge badge-student">Student Project</span>
-                        {% else %}
-                        <span class="badge badge-lecturer">Lecturer Research</span>
-                        {% endif %}
-                        <span class="project-dept">{{ p['department'] }}</span>
-                        <span class="project-session">&bull; {{ p['academic_session'] }}</span>
+                        <span
+                            class="badge {% if p['author_type'] == 'STUDENT' %}badge-student{% else %}badge-lecturer{% endif %}">{{
+                            p['author_type'] }}</span>
+                        <span class="project-dept">{{ p['department'] }} ({{ p['academic_session'] }})</span>
                     </div>
-
-                    <h3 class="project-title">
-                        <a href="/project/{{ p['id'] }}">{{ p['title'] }}</a>
-                    </h3>
-
-                    <p class="project-author">
-                        <strong>Author:</strong> {{ p['author_name'] }}
-                        {% if p['author_type'] == 'STUDENT' and p['matric_number'] %}
-                        (Matric: {{ p['matric_number'] }})
-                        {% endif %}
-                        {% if p['supervisor'] %}
-                        &bull; <strong>Supervisor:</strong> {{ p['supervisor'] }}
-                        {% endif %}
-                    </p>
-
-                    <p class="project-abstract-snippet">
-                        {{ p['abstract'][:250] }}{% if p['abstract']|length > 250 %}...{% endif %}
-                    </p>
-
-                    <div class="project-footer">
-                        <span class="project-keywords"><strong>Keywords:</strong> {{ p['keywords'] }}</span>
-                        <a href="/project/{{ p['id'] }}" class="btn btn-outline btn-sm">View Project Details &rarr;</a>
-                    </div>
-                </article>
+                    <h3 class="project-title" style="margin-top: 8px;"><a href="/project/{{ p['id'] }}">{{ p['title']
+                            }}</a></h3>
+                    <p class="project-author">By {{ p['author_name'] }}</p>
+                </div>
                 {% endfor %}
             </div>
-            {% elif query %}
-            <div class="empty-state">
-                <h3>No matching research or project found</h3>
-                <p>No repository records matched the term "{{ query }}". If this was a verification search for a student
-                    proposal, this topic may not exist in the repository yet.</p>
-            </div>
             {% else %}
-            <div class="empty-state">
-                <p>Enter a query above to query the repository metadata.</p>
+            {% if query %}
+            <div class="detail-card" style="padding: 30px; border-left: 4px solid var(--accent-color);">
+                <h3 style="margin-bottom: 10px; color: var(--text-main);">No matching research or project found</h3>
+                <p style="color: var(--text-muted);">No repository records matched the term "{{ query }}". If this was a
+                    verification search for a student proposal, this topic may not exist in the repository yet.</p>
             </div>
+            {% endif %}
             {% endif %}
         </div>
     </div>

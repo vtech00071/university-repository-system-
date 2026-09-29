@@ -1,81 +1,101 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="project-detail-section">
+<section style="padding: 40px 0 80px;">
     <div class="container">
-        <div class="back-link-wrapper">
-            <a href="javascript:history.back()" class="back-link">&larr; Back to Results</a>
+        <!-- Back Navigation -->
+        <div style="margin-bottom: 20px;">
+            <a href="javascript:history.back()"
+                style="color: var(--text-muted); font-size: 0.95rem; font-weight: 500;">&larr; Back to Results</a>
         </div>
 
-        <article class="detail-card">
-            <header class="detail-header">
-                <div class="detail-badges">
-                    {% if project['author_type'] == 'STUDENT' %}
-                    <span class="badge badge-student">Student Final-Year Project</span>
-                    {% else %}
-                    <span class="badge badge-lecturer">Lecturer Research Material</span>
-                    {% endif %}
-                    <span class="badge-dept">{{ project['department'] }}</span>
-                </div>
-                <h1 class="detail-title">{{ project['title'] }}</h1>
-                <p class="detail-subtitle">Submitted on {{ project['created_at'] }} &bull; Session: {{
-                    project['academic_session'] }}</p>
-            </header>
+        <!-- Main Detail Card -->
+        <div class="detail-card" style="padding: 40px;">
 
-            <div class="detail-grid">
-                <div class="detail-item">
-                    <span class="detail-label">Author</span>
-                    <span class="detail-value">{{ project['author_name'] }}</span>
+            <!-- Badges -->
+            <div class="project-meta" style="margin-bottom: 20px;">
+                <span
+                    class="badge {% if project['author_type'] == 'STUDENT' %}badge-student{% else %}badge-lecturer{% endif %}">
+                    {% if project['author_type'] == 'STUDENT' %}STUDENT FINAL-YEAR PROJECT{% else %}LECTURER RESEARCH{%
+                    endif %}
+                </span>
+                <span class="badge badge-dept" style="background-color: #f1f5f9; color: var(--text-main);">{{
+                    project['department'] }}</span>
+            </div>
+
+            <!-- Title & Timeline -->
+            <h1 class="page-title" style="margin-top: 0; margin-bottom: 10px; line-height: 1.3;">{{ project['title'] }}
+            </h1>
+            <p
+                style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px;">
+                Submitted on {{ project['created_at'] }} &bull; Academic Session: {{ project['academic_session'] }}
+            </p>
+
+            <!-- Metadata Grid -->
+            <div class="form-grid" style="margin-bottom: 35px; row-gap: 25px;">
+                <div>
+                    <p
+                        style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
+                        Author</p>
+                    <p style="font-weight: 500; font-size: 1.05rem;">{{ project['author_name'] }}</p>
                 </div>
 
-                {% if project['author_type'] == 'STUDENT' %}
-                <div class="detail-item">
-                    <span class="detail-label">Matriculation Number</span>
-                    <span class="detail-value">{{ project['matric_number'] }}</span>
-                </div>
-
-                <div class="detail-item">
-                    <span class="detail-label">Supervisor</span>
-                    <span class="detail-value">{{ project['supervisor'] }}</span>
+                {% if project['matric_number'] %}
+                <div>
+                    <p
+                        style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
+                        Matriculation Number</p>
+                    <p style="font-weight: 500; font-size: 1.05rem;">{{ project['matric_number'] }}</p>
                 </div>
                 {% endif %}
 
-                <div class="detail-item">
-                    <span class="detail-label">Department</span>
-                    <span class="detail-value">{{ project['department'] }}</span>
+                {% if project['supervisor'] %}
+                <div>
+                    <p
+                        style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
+                        Supervisor</p>
+                    <p style="font-weight: 500; font-size: 1.05rem;">{{ project['supervisor'] }}</p>
                 </div>
+                {% endif %}
 
-                <div class="detail-item">
-                    <span class="detail-label">Academic Session</span>
-                    <span class="detail-value">{{ project['academic_session'] }}</span>
-                </div>
-
-                <div class="detail-item full-width">
-                    <span class="detail-label">Keywords</span>
-                    <span class="detail-value">{{ project['keywords'] }}</span>
+                <div class="form-group full-width">
+                    <p
+                        style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
+                        Keywords</p>
+                    <p style="font-weight: 500; color: var(--accent-color);">{{ project['keywords'] }}</p>
                 </div>
             </div>
 
-            <div class="abstract-container">
-                <h2 class="abstract-title">Abstract</h2>
-                <div class="abstract-text">
+            <!-- Abstract Section -->
+            <div style="margin-bottom: 40px;">
+                <h3
+                    style="font-family: 'Merriweather', serif; font-size: 1.25rem; margin-bottom: 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; display: inline-block;">
+                    Abstract</h3>
+                <p style="line-height: 1.8; color: var(--text-main); font-size: 1.05rem; text-align: justify;">
                     {{ project['abstract'] }}
-                </div>
+                </p>
             </div>
 
-            <div class="download-action-bar">
-                <div class="file-info">
-                    <span class="file-icon">📄</span>
-                    <div>
-                        <strong>Document:</strong> {{ project['original_filename'] }}
-                        <span class="file-subtext">Original verified repository submission</span>
-                    </div>
+            <!-- Download Section -->
+            <div
+                style="background-color: #f8fafc; padding: 25px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+                <div>
+                    <h4 style="margin-bottom: 5px; display: flex; align-items: center; gap: 8px; font-size: 1.1rem;">
+                        📄 Attached Document
+                    </h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">
+                        <strong>{{ project['original_filename'] }}</strong> &mdash; Original verified repository
+                        submission.
+                    </p>
                 </div>
-                <a href="/project/{{ project['id'] }}/download" class="btn btn-primary btn-download">
+
+                <a href="/project/{{ project['id'] }}/download" class="btn btn-primary"
+                    style="white-space: nowrap; padding: 12px 24px;">
                     Download Project PDF
                 </a>
             </div>
-        </article>
+
+        </div>
     </div>
 </section>
 {% endblock %}
